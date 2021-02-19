@@ -11,7 +11,7 @@ const { readyDoordash,verifyuser,getOrder,getRestaurantAccess,signup,login,ready
 const { createToken} = require('../middlewares/token');
 
 
-router.get('/getOrders',verifyuser,getRestaurantAccess,
+router.get('/getOrders',
     getOrder
   );//superadmin,admin,manager
   router.get('/getAllOrders',

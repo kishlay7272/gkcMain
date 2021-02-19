@@ -596,16 +596,27 @@ module.exports = {
             else {
                 const orderId = req.query.orderId;
                 // query for fetching data with page number and offset
-                const prodsQuery = "select * from `order`  JOIN `customer` ON  `order`.customer_id=customer.customer_id JOIN item ON `item`.order_id=`order`.order_id JOIN delivery d ON d.order_id=`order`.order_id where `order`.`order_id`= " + `"${orderId} "` + " and `order`.`Branch_id` IN ('ce1a1d32-4053-45c5-93e5-79fde0bf0d06')"
+                const prodsQuery = "select * from `order`  JOIN `customer` ON  `order`.customer_id=customer.customer_id JOIN item ON `item`.order_id=`order`.order_id JOIN delivery d ON d.order_id=`order`.order_id where `order`.`order_id`= " + `"${orderId}"`
                 dbConn_sql.query(prodsQuery, function (error, results) {
                     console.log(prodsQuery)
                     if (error) throw error;
-                    if (results) {
+                    if(!results.length)
+                    {
+                        return res.status(400).json(
+                            {
+                                "status": "400",
+                                "error": "no orders found"
+                            }
+                        );
+                        
+                    }
+                    if (results.length) {
                         let item_count = results.length;
                         let items = [];
                         for (key of results) {
                             items.push({ item_id: key.item_id, item_name: key.item_name, item_price: key.price, item_quantity: key.quantity });
                         }
+
                         let orderObject = {
                             "order_id": results[0].order_id,
                             "sub_total": results[0].sub_total,
