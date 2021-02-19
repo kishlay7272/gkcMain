@@ -596,7 +596,7 @@ module.exports = {
             else {
                 const orderId = req.query.orderId;
                 // query for fetching data with page number and offset
-                const prodsQuery = "select * from `order`  JOIN `customer` ON  `order`.customer_id=customer.customer_id JOIN item ON `item`.order_id=`order`.order_id where `order`.`order_id`= " + `"${orderId} "` + " and `order`.`Branch_id` IN ('ce1a1d32-4053-45c5-93e5-79fde0bf0d06')"
+                const prodsQuery = "select * from `order`  JOIN `customer` ON  `order`.customer_id=customer.customer_id JOIN item ON `item`.order_id=`order`.order_id JOIN delivery d ON d.order_id=`order`.order_id where `order`.`order_id`= " + `"${orderId} "` + " and `order`.`Branch_id` IN ('ce1a1d32-4053-45c5-93e5-79fde0bf0d06')"
                 dbConn_sql.query(prodsQuery, function (error, results) {
                     console.log(prodsQuery)
                     if (error) throw error;
@@ -718,7 +718,7 @@ module.exports = {
     },
     totalOrders: async function (req, res, next) {
         try {
-            if (!req.query.limit || !req.query.page || (req.query.limit == "undefined") || (req.query.page = "undefined")) {
+            if (!req.query.limit  || (req.query.limit == "undefined") ) {
                 return res.status(400).json(
                     {
                         "status": "400",
@@ -734,7 +734,7 @@ module.exports = {
                 const offset = (page - 1) * limit;
                 let totalPage;
 
-                let prodsQuery1 = "select b.Branch_name,c.Name,o.order_id,o.total,created_date,group_concat(i.item_name) as item from `order`  o JOIN `customer` c ON  o.customer_id=c.customer_id JOIN  item i ON i.order_id=o.order_id JOIN branch b ON b.branch_id=o.branch_id group by o.order_id limit " + `${limit}` + " offset " + `${offset}`
+                let prodsQuery1 = "select d.Delivery_id,d.Name,d.mobile,b.Branch_name,c.Name,o.order_id,o.total,created_date,group_concat(i.item_name) as item from `order`  o JOIN `customer` c ON  o.customer_id=c.customer_id JOIN  item i ON i.order_id=o.order_id JOIN delivery d ON d.order_id=o.order_id JOIN branch b ON b.branch_id=o.branch_id group by o.order_id limit " + `${limit}` + " offset " + `${offset}`
                 dbConn_sql.query(prodsQuery1, function (error, results) {
                     if (error) throw error;
                     if (results) {
